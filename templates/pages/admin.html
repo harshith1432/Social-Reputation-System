@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="glass-card" style="margin-bottom: 2rem;">
+        <h2><i class="fas fa-user-shield"></i> Admin Moderation Panel</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Manage users, ratings, and reported content.</p>
+    </div>
+
+    <!-- Stats Row -->
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
+        <div class="glass-card" style="text-align: center; padding: 1.5rem;">
+            <span style="display: block; font-size: 1.5rem; font-weight: 700;">{{ users|length }}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">TOTAL USERS</span>
+        </div>
+        <div class="glass-card" style="text-align: center; padding: 1.5rem;">
+            <span style="display: block; font-size: 1.5rem; font-weight: 700;">{{ ratings|length }}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">TOTAL RATINGS</span>
+        </div>
+        <div class="glass-card" style="text-align: center; padding: 1.5rem;">
+            <span style="display: block; font-size: 1.5rem; font-weight: 700; color: var(--danger);">{{ reports|length }}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);">REPORTS</span>
+        </div>
+    </div>
+
+    <!-- Ratings Moderation -->
+    <div class="glass-card">
+        <h3 style="margin-bottom: 1.5rem;">Recent Ratings</h3>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--glass-border); text-align: left;">
+                        <th style="padding: 1rem;">Rater</th>
+                        <th style="padding: 1rem;">To User</th>
+                        <th style="padding: 1rem;">Score</th>
+                        <th style="padding: 1rem;">Toxicity</th>
+                        <th style="padding: 1rem;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in ratings|sort(attribute='created_at', reverse=True) %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 1rem;">{{ r.rated_by_phone }}</td>
+                        <td style="padding: 1rem;">{{ r.rated_user.name }}</td>
+                        <td style="padding: 1rem; color: var(--warning);">{{ r.rating }}★</td>
+                        <td style="padding: 1rem; color: {{ 'var(--danger)' if r.toxicity_score > 0.5 else 'white' }};">
+                            {{ "%.2f"|format(r.toxicity_score) }}
+                        </td>
+                        <td style="padding: 1rem;">
+                            <form action="{{ url_for('admin.delete_rating', id=r.id) }}" method="POST" onsubmit="return confirm('Delete this rating?');">
+                                <button type="submit" style="background: none; border: none; color: var(--danger); cursor: pointer;"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

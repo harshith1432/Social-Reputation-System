@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="glass-card animate-fade" style="max-width: 450px; margin: 4rem auto;">
+    <h2 style="margin-bottom: 0.5rem; text-align: center;">Join SRS</h2>
+    <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem;">Create your verifiable trust profile</p>
+    
+    <form method="POST" id="signupForm">
+        <div style="margin-bottom: 1.25rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Full Name</label>
+            <input type="text" name="name" required placeholder="John Doe" style="width: 100%; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+        </div>
+        <div style="margin-bottom: 1.25rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Phone Number</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" name="phone" id="phone" required placeholder="+1234567890" style="flex: 1; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                <button type="button" onclick="sendOTP()" class="btn" style="background: var(--glass-border); font-size: 0.8rem;">Send OTP</button>
+            </div>
+        </div>
+        <div style="margin-bottom: 1.25rem; display: none;" id="otpGroup">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Verification Code</label>
+            <input type="text" name="otp" id="otp" placeholder="123456" style="width: 100%; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+        </div>
+        <div style="margin-bottom: 2rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Create Password</label>
+            <input type="password" name="password" required placeholder="••••••••" style="width: 100%; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Create Account</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted);">
+        Already have an account? <a href="{{ url_for('auth.login') }}" style="color: var(--primary); text-decoration: none;">Log In</a>
+    </p>
+</div>
+
+<script>
+async function sendOTP() {
+    const phone = document.getElementById('phone').value;
+    if (!phone) return alert("Please enter phone number");
+    
+    const res = await fetch('/send-otp', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({phone})
+    });
+    const data = await res.json();
+    if (data.success) {
+        document.getElementById('otpGroup').style.display = 'block';
+        alert("OTP sent to terminal! (Simulator Mode)");
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="glass-card" style="margin-bottom: 2rem; padding: 1.5rem;">
+        <h2 style="font-size: 1.25rem;">Search Results for "{{ search_query }}"</h2>
+    </div>
+
+    <div style="display: grid; gap: 1rem;">
+        {% if users %}
+            {% for u in users %}
+            <a href="{{ url_for('user.public_profile', user_id=u.id) }}" class="glass-card" style="text-decoration: none; color: inherit; display: flex; align-items: center; justify-content: space-between; padding: 1.25rem; transition: transform 0.2s;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                        {{ u.name[0].upper() }}
+                    </div>
+                    <div>
+                        <h4 style="margin-bottom: 0.15rem;">{{ u.name }}</h4>
+                        <p style="color: var(--text-muted); font-size: 0.8rem;">{{ u.phone }}</p>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="color: var(--primary); font-weight: 700; font-size: 1.2rem;">{{ u.trust_score }}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">TRUST SCORE</div>
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <div class="glass-card" style="text-align: center; padding: 4rem 2rem;">
+                <i class="fas fa-user-slash" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block;"></i>
+                <p style="color: var(--text-muted);">No users found with that phone number.</p>
+                <a href="{{ url_for('user.dashboard') }}" style="color: var(--primary); margin-top: 1rem; display: inline-block;">Back to Dashboard</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.glass-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.08); }
+</style>
+{% endblock %}

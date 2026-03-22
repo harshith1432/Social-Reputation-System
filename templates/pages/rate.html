@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="glass-card" style="margin-bottom: 2rem;">
+        <h2 style="margin-bottom: 0.5rem;"><i class="fas fa-star" style="color: var(--warning);"></i> Rate {{ user.name }}</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Your feedback helps others trust this person and creates a better social environment.</p>
+    </div>
+
+    <form action="{{ url_for('rating.submit_rating') }}" method="POST" class="glass-card">
+        <input type="hidden" name="rated_user_id" value="{{ user.id }}">
+        
+        <!-- Star Rating -->
+        <div style="margin-bottom: 2rem; text-align: center;">
+            <label style="display: block; margin-bottom: 1rem; font-weight: 600;">Overall Experience</label>
+            <div class="star-rating" style="font-size: 2.5rem; color: var(--text-muted); display: flex; justify-content: center; gap: 0.5rem; flex-direction: row;">
+                <input type="radio" name="rating" value="1" id="star1" style="display:none" required><label for="star1" class="star" onclick="setRating(1)"><i class="fas fa-star"></i></label>
+                <input type="radio" name="rating" value="2" id="star2" style="display:none"><label for="star2" class="star" onclick="setRating(2)"><i class="fas fa-star"></i></label>
+                <input type="radio" name="rating" value="3" id="star3" style="display:none"><label for="star3" class="star" onclick="setRating(3)"><i class="fas fa-star"></i></label>
+                <input type="radio" name="rating" value="4" id="star4" style="display:none"><label for="star4" class="star" onclick="setRating(4)"><i class="fas fa-star"></i></label>
+                <input type="radio" name="rating" value="5" id="star5" style="display:none"><label for="star5" class="star" onclick="setRating(5)"><i class="fas fa-star"></i></label>
+            </div>
+            <p id="rating-text" style="margin-top: 0.5rem; color: var(--primary); font-weight: 600;">Select score</p>
+        </div>
+
+        <!-- Feedback Tags -->
+        <div style="margin-bottom: 2rem;">
+            <label style="display: block; margin-bottom: 1rem; font-weight: 600;">Trust Tags</label>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <label class="tag-label"><input type="checkbox" name="tags" value="Reliable" style="display:none"><span>#Reliable</span></label>
+                <label class="tag-label"><input type="checkbox" name="tags" value="Honest" style="display:none"><span>#Honest</span></label>
+                <label class="tag-label"><input type="checkbox" name="tags" value="Hardworking" style="display:none"><span>#Hardworking</span></label>
+                <label class="tag-label"><input type="checkbox" name="tags" value="Helpful" style="display:none"><span>#Helpful</span></label>
+                <label class="tag-label"><input type="checkbox" name="tags" value="Professional" style="display:none"><span>#Professional</span></label>
+            </div>
+        </div>
+
+        <!-- Feedback Text -->
+        <div style="margin-bottom: 2rem;">
+            <label style="display: block; margin-bottom: 1rem; font-weight: 600;">Tell us more</label>
+            <textarea name="feedback" rows="4" placeholder="Share your experience (AI will analyze for toxicity)..." style="width: 100%; border-radius: 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); padding: 1rem; color: white; resize: none;"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Submit Rating</button>
+    </form>
+</div>
+
+<style>
+.star-rating .star { cursor: pointer; transition: color 0.2s; }
+.star-rating .star:hover, .star-rating .star.active { color: var(--warning); }
+.tag-label input:checked + span { background: var(--primary); color: white; border-color: var(--primary); }
+.tag-label span { 
+    display: inline-block; 
+    padding: 0.5rem 1rem; 
+    border-radius: 2rem; 
+    background: rgba(255,255,255,0.05); 
+    border: 1px solid var(--glass-border); 
+    font-size: 0.8rem; 
+    cursor: pointer; 
+    transition: all 0.2s;
+}
+</style>
+
+<script>
+function setRating(val) {
+    const stars = document.querySelectorAll('.star');
+    const texts = ["", "Poor", "Fair", "Good", "Very Good", "Excellent"];
+    document.getElementById('rating-text').innerText = texts[val];
+    
+    stars.forEach((s, i) => {
+        if (i < val) s.classList.add('active');
+        else s.classList.remove('active');
+    });
+}
+</script>
+{% endblock %}

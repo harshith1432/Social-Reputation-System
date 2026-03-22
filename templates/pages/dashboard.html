@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate-fade">
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- Welcome Header -->
+        <header class="glass-card" style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(255, 255, 255, 0.05));">
+            <div>
+                <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Hello, {{ user.name }}!</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Your current trust score is</p>
+                <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary);">{{ user.trust_score }}</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="background: rgba(0,0,0,0.2); padding: 0.5rem 1rem; border-radius: 1rem; display: inline-block;">
+                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block;">TRUST STATUS</span>
+                    <span style="color: var(--success); font-weight: 700;">{{ 'VERIFIED' if user.trust_score > 70 else 'RELIABLE' if user.trust_score > 40 else 'NEW' }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Search Bar -->
+        <section class="glass-card" style="padding: 1.5rem;">
+            <h3 style="margin-bottom: 1rem; font-size: 1rem;">Verify Someone by Phone</h3>
+            <form action="{{ url_for('user.search') }}" method="GET" style="display: flex; gap: 0.5rem;">
+                <input type="text" name="phone" placeholder="Enter phone number..." style="flex: 1; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid var(--glass-border); background: rgba(0,0,0,0.2); color: white;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+            </form>
+        </section>
+
+        <!-- Quick Actions -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <a href="{{ url_for('user.public_profile', user_id=user.id) }}" class="glass-card" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1.5rem;">
+                <i class="fas fa-qrcode" style="font-size: 2rem; color: var(--primary);"></i>
+                <span>My QR Code</span>
+            </a>
+            <a href="{{ url_for('media.upload_media') }}" class="glass-card" style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 1.5rem;">
+                <i class="fas fa-images" style="font-size: 2rem; color: var(--warning);"></i>
+                <span>Upload Proof</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+async function handleFileUpload(input) {
+    if (!input.files || !input.files[0]) return;
+    
+    const formData = new FormData();
+    formData.append('file', input.files[0]);
+    formData.append('caption', prompt("Enter a caption for this proof:") || "");
+    
+    const btn = input.parentElement;
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i><span>Uploading...</span>';
+    
+    try {
+        const res = await fetch('{{ url_for("media.upload_media") }}', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert("Proof uploaded successfully!");
+            location.reload();
+        } else {
+            alert("Upload failed: " + data.message);
+            btn.innerHTML = originalContent;
+        }
+    } catch (e) {
+        alert("Network error occurred.");
+        btn.innerHTML = originalContent;
+    }
+}
+</script>
+{% endblock %}

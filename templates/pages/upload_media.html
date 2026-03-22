@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="animate-fade">
+    <div class="glass-card" style="margin-bottom: 2rem;">
+        <h2><i class="fas fa-upload" style="color: var(--warning);"></i> Upload Proof</h2>
+        <p style="color: var(--text-muted);">Upload photos or videos of your social work to increase your trust score.</p>
+    </div>
+
+    <form id="uploadForm" class="glass-card" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Select File</label>
+            <input type="file" name="file" id="fileInput" accept="image/*,video/mp4" required style="width: 100%; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 0.5rem; color: white;">
+        </div>
+
+        <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Caption</label>
+            <input type="text" name="caption" placeholder="What is this proof about?" style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+        </div>
+
+        <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Location (Optional)</label>
+            <input type="text" name="location" placeholder="Where was this taken?" style="width: 100%; padding: 0.75rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 0.5rem; color: white;">
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn btn-primary" style="padding: 1rem;">
+            <i class="fas fa-cloud-upload-alt"></i> Upload Now
+        </button>
+    </form>
+</div>
+
+<script>
+document.getElementById('uploadForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const btn = document.getElementById('submitBtn');
+    const originalContent = btn.innerHTML;
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('{{ url_for("media.upload_media") }}', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert("Proof uploaded successfully!");
+            window.location.href = "{{ url_for('user.dashboard') }}";
+        } else {
+            alert("Upload failed: " + data.message);
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+        }
+    } catch (err) {
+        alert("A network error occurred.");
+        btn.innerHTML = originalContent;
+        btn.disabled = false;
+    }
+};
+</script>
+{% endblock %}

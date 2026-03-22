@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Reputation System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar glass-card" style="margin: 1rem; padding: 1rem; border-radius: 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="/" style="text-decoration: none; color: white; font-weight: 700; font-size: 1.2rem;">
+            <i class="fas fa-shield-halved"></i> SRS
+        </a>
+        <div class="nav-links" style="display: flex; gap: 1.5rem;">
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('user.dashboard') }}" style="color: var(--text-muted); text-decoration: none;">Dashboard</a>
+                <a href="{{ url_for('user.public_profile', user_id=session['user_id']) }}" style="color: var(--text-muted); text-decoration: none;">My Profile</a>
+                <a href="{{ url_for('auth.logout') }}" style="color: var(--danger); text-decoration: none;">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}" style="color: var(--text-muted); text-decoration: none;">Login</a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-primary" style="padding: 0.4rem 1rem;">Join Now</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="container" style="max-width: 800px; margin: 0 auto; padding: 1rem;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="toast {{ category }}" style="margin-bottom: 1rem; padding: 1rem; border-radius: 0.75rem; background: rgba(255,255,255,0.1); border-left: 4px solid var(--{{ category if category != 'danger' else 'danger' }});">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+        &copy; 2024 Social Reputation System. Built for trust.
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
