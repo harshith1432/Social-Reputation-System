@@ -91,4 +91,4 @@ Contributions are what make the open source community such an amazing place to l
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
-*Built with ❤️ by Antigravity*
+*Built with ❤️ by Harshith D*
